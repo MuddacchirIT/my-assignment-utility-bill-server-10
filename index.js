@@ -24,6 +24,7 @@ async function run() {
 
     const db = client.db("utility_bill");
     const productsCollection = db.collection("bills");
+    const paymentInfo = db.collection("payment");
     // getAll
     app.get("/bills", async (req, res) => {
       const cursor = productsCollection.find().sort({ date: -1 });
@@ -64,8 +65,24 @@ async function run() {
       const result = await productsCollection.deleteOne(query);
       res.send(result);
     });
+    // recorded_info
+    app.get("/payment", async (req, res) => {
+      const email = req.query.email;
+      const query = {};
+      if (email) {
+        query.company_email = email;
+      }
+      const cursor = await paymentInfo.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.post("/payment", async (req, res) => {
+      const newPayment = req.body;
+      const result = await paymentInfo.insertOne(newPayment);
+      res.send(result);
+    });
 
-    client.db("admin").command({ ping: 1 });
+    await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
