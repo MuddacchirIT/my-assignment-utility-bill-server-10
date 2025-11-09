@@ -26,7 +26,7 @@ async function run() {
     const productsCollection = db.collection("bills");
     // getAll
     app.get("/bills", async (req, res) => {
-      const cursor = productsCollection.find();
+      const cursor = productsCollection.find().sort({ date: -1 });
       const result = await cursor.toArray();
       res.send(result);
     });
