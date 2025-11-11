@@ -25,6 +25,20 @@ async function run() {
     const db = client.db("utility_bill");
     const productsCollection = db.collection("bills");
     const paymentInfo = db.collection("payment");
+    const usersCollection = db.collection("users");
+    // get users
+    app.post("/users", async (req, res) => {
+      const newUsers = req.body;
+      const email = req.body.email;
+      const query = { email: email };
+      const existingUser = await usersCollection.findOne(query);
+      if (existingUser) {
+        res.send("user already exits, do not need to add again.");
+      } else {
+        const result = await usersCollection.insertOne(newUsers);
+        res.send(result);
+      }
+    });
     // getAll
     app.get("/bills", async (req, res) => {
       const cursor = productsCollection.find().sort({ date: -1 });
@@ -70,7 +84,7 @@ async function run() {
       const email = req.query.email;
       const query = {};
       if (email) {
-        query.company_email = email;
+        query.email = email;
       }
       const cursor = await paymentInfo.find(query);
       const result = await cursor.toArray();
@@ -79,6 +93,28 @@ async function run() {
     app.post("/payment", async (req, res) => {
       const newPayment = req.body;
       const result = await paymentInfo.insertOne(newPayment);
+      res.send(result);
+    });
+
+    // update
+    app.patch("/bills/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedPayment = req.body;
+      const query = { _id: new ObjectId(id) };
+      const update = {
+        $set: {
+          category: updatedPayment.catch,
+          amount: updatedPayment.amount,
+        },
+      };
+      const result = await paymentInfo.updateOne(query, update);
+      res.send(result);
+    });
+    // deleteOne
+    app.delete("/bills/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await paymentInfo.deleteOne(query);
       res.send(result);
     });
 
