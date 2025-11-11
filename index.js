@@ -26,6 +26,7 @@ async function run() {
     const productsCollection = db.collection("bills");
     const paymentInfo = db.collection("payment");
     const usersCollection = db.collection("users");
+
     // get users
     app.post("/users", async (req, res) => {
       const newUsers = req.body;
@@ -39,9 +40,16 @@ async function run() {
         res.send(result);
       }
     });
+
     // getAll
     app.get("/bills", async (req, res) => {
-      const cursor = productsCollection.find().sort({ date: -1 });
+      const cursor = productsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    // latest bills
+    app.get("/latest-bills", async (req, res) => {
+      const cursor = productsCollection.find().sort({ data: -1 }).limit(6);
       const result = await cursor.toArray();
       res.send(result);
     });
