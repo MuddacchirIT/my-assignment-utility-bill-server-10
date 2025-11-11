@@ -49,7 +49,7 @@ async function run() {
     });
     // latest bills
     app.get("/latest-bills", async (req, res) => {
-      const cursor = productsCollection.find().sort({ data: -1 }).limit(6);
+      const cursor = productsCollection.find().sort({ data: -1 }).limit(8);
       const result = await cursor.toArray();
       res.send(result);
     });
