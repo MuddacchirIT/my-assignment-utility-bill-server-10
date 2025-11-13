@@ -81,20 +81,28 @@ async function run() {
       res.send(result);
     });
     // deleteOne
-    app.delete("/bills/:id", async (req, res) => {
+    app.delete("/payment/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await productsCollection.deleteOne(query);
+      const result = await paymentInfo.deleteOne(query);
       res.send(result);
     });
-    // recorded_info
+
+    app.get("/payment/bybill/:billID", async (req, res) => {
+      const billID = req.params.billID;
+      const query = { id: billID };
+      console.log(billID);
+      const cursor = paymentInfo.find(query).sort({ buyer_amount: -1 });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.get("/payment", async (req, res) => {
-      const email = req.query.email;
       const query = {};
-      if (email) {
-        query.email = email;
+      if (query.email) {
+        query.buyer_email = email;
       }
-      const cursor = await paymentInfo.find(query);
+      const cursor = paymentInfo.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
