@@ -20,7 +20,7 @@ const client = new MongoClient(uri, {
 });
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("utility_bill");
     const productsCollection = db.collection("bills");
@@ -63,7 +63,7 @@ async function run() {
     // include
     app.post("/bills", async (req, res) => {
       const newProduct = req.body;
-      const result = await productsCollection.insertOne(newProduct);
+      const result = await paymentInfo.insertOne(newProduct);
       res.send(result);
     });
     // update
@@ -134,7 +134,7 @@ async function run() {
       res.send(result);
     });
 
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
